@@ -1,4 +1,5 @@
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 public class LinkedListWithCursor<T> {
     //Importante: No cambiar ni los nombres ni la visibilidad
@@ -17,55 +18,122 @@ public class LinkedListWithCursor<T> {
 
     public LinkedListWithCursor(Collection<T> col, int index) {
         // TODO Ejercicio 1
-        throw new UnsupportedOperationException("Ejercicio 1: por implementar");
+        if (col == null) {
+            throw new NullPointerException();
+        }
+        if (index < 0 || index > col.size()) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Node<T> lastRight = null;
+        int currentIndex  = 0;
+
+        for (T elem : col) {
+            if (currentIndex < index) {
+                this.left = new Node<>(elem, this.left);
+                this.sizeLeft++;
+            } else {
+                Node<T> newNode = new Node<>(elem, null);
+                if (this.right == null) {
+                    this.right = newNode;
+                } else {
+                    lastRight.next = newNode;
+                }
+                lastRight = newNode;
+                this.sizeRight++;
+            }
+            currentIndex++;
+        }
     }
 
 
     public int index() {
         // TODO Ejercicio 2
-        throw new UnsupportedOperationException("Ejercicio 2: por implementar");
+        return this.sizeLeft;
     }
 
 
     public int size() {
         // TODO Ejercicio 3
-        throw new UnsupportedOperationException("Ejercicio 3: por implementar");
+        return this.sizeLeft + this.sizeRight;
     }
 
 
     public T current() {
         // TODO Ejercicio 4
-        throw new UnsupportedOperationException("Ejercicio 4: por implementar");
+        if (this.right == null) {
+            return null;
+        }
+        return this.right.data;
     }
 
 
     public void add(T item) {
         // TODO Ejercicio 5
-        throw new UnsupportedOperationException("Ejercicio 5: por implementar");
+        if (item == null) {
+            throw new NullPointerException();
+        }
+        this.left = new Node<>(item, this.left);
+        sizeLeft++;
     }
 
 
     public T remove() {
         // TODO Ejercicio 6
-        throw new UnsupportedOperationException("Ejercicio 6: por implementar");
+        if (this.right == null) {
+            throw new NoSuchElementException();
+        }
+        T borrado = this.right.data;
+        this.right = this.right.next;
+        sizeRight--;
+        return borrado;
     }
 
 
     public T next() {
         // TODO Ejercicio 7
-        throw new UnsupportedOperationException("Ejercicio 7: por implementar");
+        if (this.right == null) {
+            throw new NoSuchElementException();
+        }
+        Node<T> aux = this.right;
+        this.right = this.right.next;
+        aux.next = this.left;
+        this.left = aux;
+        this.sizeLeft++;
+        this.sizeRight--;
+        return aux.data;
     }
 
 
     public T previous() {
         // TODO Ejercicio 8
-        throw new UnsupportedOperationException("Ejercicio 8: por implementar");
+        if (this.left == null) {
+            throw new NoSuchElementException();
+        }
+        Node<T> aux = this.left;
+        this.left = this.left.next;
+        aux.next = this.right;
+        this.right = aux;
+        this.sizeLeft--;
+        this.sizeRight++;
+        return aux.data;
     }
 
 
     public T moveTo(int index) {
         // TODO Ejercicio 9
-        throw new UnsupportedOperationException("Ejercicio 9: por implementar");
+        if (index < 0 || index > this.size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        while (this.sizeLeft < index) {
+            this.next();
+        }
+
+        while (this.sizeLeft > index) {
+            this.previous();
+        }
+
+        return (this.right != null) ? this.right.data : null;
     }
 
     /**
